@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diseño de Vigas</title>
+</head>
+<body>
+    <h1>Diseño de Vigas</h1>
+    <form action="/vigas" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Subir Archivo y Procesar</button>
+    </form>
+
+    {% if column_names %}
+        <h2>Nombres de Columnas:</h2>
+        <ul>
+            {% for name in column_names %}
+                <li>{{ name }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>
