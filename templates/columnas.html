@@ -1,13 +1,42 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diseño de Columnas</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}
+    Diseño de Vigas
+{% endblock %}
+
+{% block content %}
     <h1>Diseño de Columnas</h1>
-    <p>Esta sección está en desarrollo. Pronto podrás realizar el diseño de columnas.</p>
-</body>
-</html>
+    <form method="POST" enctype="multipart/form-data">
+        <!-- Campo para subir el archivo CSV -->
+        <label for="file">Archivo CSV:</label>
+        <input type="file" name="file" required><br><br>
+
+        <!-- Campo para seleccionar si el concreto es liviano -->
+        <label for="tipo_concreto">¿Concreto liviano? (si/no):</label>
+        <input type="text" name="tipo_concreto" required><br><br>
+
+        <!-- Parámetros de la columna -->
+        <label for="b">Base (m):</label>
+        <input type="number" name="b" step="0.01" required><br><br>
+
+        <label for="h">Altura (m):</label>
+        <input type="number" name="h" step="0.01" required><br><br>
+
+        <label for="recub">Recubrimiento (m):</label>
+        <input type="number" name="recub" step="0.01" required><br><br>
+
+        <!-- Resistencia de los materiales -->
+        <label for="fc">Resistencia del concreto (MPa):</label>
+        <input type="number" name="fc" step="0.01" required><br><br>
+
+        <label for="fyt">Resistencia del acero (MPa):</label>
+        <input type="number" name="fyt" step="0.01" required><br><br>
+
+        <!-- Distancia de análisis de la viga -->
+        <label for="R">Cada cuántos metros analizar (m):</label>
+        <input type="number" name="R" step="0.01" required><br><br>
+
+        <!-- Botón para enviar el formulario -->
+        <button type="submit">Subir Archivo</button>
+    </form>
+{% endblock %}

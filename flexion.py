@@ -1,13 +1,13 @@
 #Entradas en metros
 b=float(0.2)
-h=float(0.4)
+h=float(0.5)
 recub=0.05
 d=float(h-recub)
 dprima=float(recub)
 #Todo en megaPascales
 fc=float(20)
 fy=float(500)
-Mu=float(200)/1000
+Mu=float(1984)/1000
 phi=0.9
 Es=200000
 gamma=0.85

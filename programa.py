@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+
+import os
 
 # Diccionario de áreas de barras en mm²
 barras = {
@@ -18,43 +21,72 @@ barras = {
 }
 
 # Función para recibir los parámetros de entrada del usuario
-def input_parametros():
+# Modificar input_parametros() para obtener los datos desde el formulario POST de Flask
+def input_parametros(request_form):
     """
-    Solicita al usuario ingresar los parámetros de entrada, incluyendo si el concreto es liviano o no.
+    Recibe los parámetros desde el formulario HTML usando request.form en Flask.
     """
-    tipo_concreto = input("¿El concreto es liviano? (si/no): ").strip().lower()
-    b = float(input("Ingrese la base de la sección (en metros): "))
-    h = float(input("Ingrese la altura de la sección (en metros): "))
-    recub = float(input("Ingrese el recubrimiento de concreto (en metros): "))
-    fc = float(input("Ingrese la resistencia del concreto (en MPa): "))
-    fyt = float(input("Ingrese la resistencia del acero (en MPa): "))
+    tipo_concreto = request_form['tipo_concreto'].strip().lower()
+    b = float(request_form['b'])
+    h = float(request_form['h'])
+    recub = float(request_form['recub'])
+    fc = float(request_form['fc'])
+    fyt = float(request_form['fyt'])
     fy = float(fyt)
     phi_cortante = 0.75
     phi_momento = 0.9
     Es = 200000  # Módulo de elasticidad del acero (en MPa)
     gamma = 0.85
+    R = float(request_form['R'])
     
-    return tipo_concreto, b, h, recub, fc, fyt, fy, phi_cortante, phi_momento, Es, gamma
+    return tipo_concreto, b, h, recub, fc, fyt, fy, phi_cortante, phi_momento, Es, gamma, R
 
 # Función para leer y seleccionar columnas del CSV
-def seleccionar_columnas(csv_path):
+def seleccionar_columnas(csv_path, x_col, momento_col, cortante_col):
     """
     Lee el archivo CSV y selecciona las columnas de interés.
     """
     df = pd.read_csv(csv_path)
-    
-    # Mostrar las columnas disponibles
-    print("Columnas disponibles:", df.columns.tolist())
-    
-    # Solicitar al usuario que seleccione las columnas
-    x_col = input("Seleccione la columna de coordenadas X: ")
-    momento_col = input("Seleccione la columna de Momento: ")
-    cortante_col = input("Seleccione la columna de Cortante: ")
-    
+
+    # Asegurarnos de que estamos usando los nombres tal como están en el CSV
+    columnas_df = {col.lower(): col for col in df.columns}
+
+    # Normalizar las columnas ingresadas por el usuario (convertir a minúsculas)
+    x_col_normalized = columnas_df.get(x_col.lower())
+    momento_col_normalized = columnas_df.get(momento_col.lower())
+    cortante_col_normalized = columnas_df.get(cortante_col.lower())
+
+    # Validar que se encontraron las columnas
+    if x_col_normalized is None:
+        raise KeyError(f"Columna X '{x_col}' no encontrada.")
+    if momento_col_normalized is None:
+        raise KeyError(f"Columna Momento '{momento_col}' no encontrada.")
+    if cortante_col_normalized is None:
+        raise KeyError(f"Columna Cortante '{cortante_col}' no encontrada.")
+
+    # Extraer las columnas selec# Función para leer y seleccionar columnas del CSV
+# Función para leer y seleccionar columnas del CSV
+def seleccionar_columnas(csv_path, x_col, momento_col, cortante_col):
+    """
+    Lee el archivo CSV y selecciona las columnas de interés.
+    """
+    df = pd.read_csv(csv_path)
+
+    # Normalizamos los nombres de todas las columnas a minúsculas
+    df.columns = df.columns.str.lower()
+
+    # Normalizamos las columnas seleccionadas
+    x_col_normalized = x_col.lower()
+    momento_col_normalized = momento_col.lower()
+    cortante_col_normalized = cortante_col.lower()
+
+    # Depuración: imprimir los nombres de las columnas seleccionadas
+    print(f"Columnas seleccionadas: X = {x_col_normalized}, Momento = {momento_col_normalized}, Cortante = {cortante_col_normalized}")
+
     # Extraer las columnas seleccionadas
-    x = df[x_col].values
-    momento = df[momento_col].values
-    cortante = df[cortante_col].values
+    x = df[x_col_normalized].values
+    momento = df[momento_col_normalized].values
+    cortante = df[cortante_col_normalized].values
     
     # Crear un DataFrame con las columnas seleccionadas
     selected_df = pd.DataFrame({
@@ -63,19 +95,25 @@ def seleccionar_columnas(csv_path):
         'cortante': cortante
     })
     
-    return selected_df
+    return selected_df, x_col_normalized
 
-# Procesar los datos y agrupar en rangos
-def procesar_datos(df, rango=2):
+
+
+
+
+def procesar_datos(df, x_col, rango=2):
     """
     Agrupa los datos de Momento y Cortante en intervalos de longitud `rango` metros.
     """
+    # Depuración: imprimir la columna de X que estamos usando
+    print(f"Usando la columna {x_col} para procesar los datos")
+
     momento_reducido = {}
     cortante_reducido = {}
     
     # Encontrar el mínimo y máximo de la coordenada X
-    min_x = df['x'].min()
-    max_x = df['x'].max()
+    min_x = df[x_col].min()
+    max_x = df[x_col].max()
 
     # Agrupar los datos en intervalos
     current_x1 = min_x
@@ -83,7 +121,7 @@ def procesar_datos(df, rango=2):
         current_x2 = current_x1 + rango
         
         # Filtrar los datos en el intervalo actual
-        datos_intervalo = df[(df['x'] >= current_x1) & (df['x'] < current_x2)]
+        datos_intervalo = df[(df[x_col] >= current_x1) & (df[x_col] < current_x2)]
         
         if not datos_intervalo.empty:
             # Obtener los máximos valores de momento y cortante en el intervalo
@@ -98,6 +136,36 @@ def procesar_datos(df, rango=2):
         current_x1 = current_x2
     
     return momento_reducido, cortante_reducido
+
+
+
+def graficar_resultados(df_seleccionado):
+    """
+    Función para graficar solo los valores originales de momento y cortante.
+    Se guarda el gráfico como archivo PNG en la carpeta 'static'.
+    """
+    # Extraer los valores originales
+    x = df_seleccionado['x'].values
+    momento_original = df_seleccionado['momento'].values
+    cortante_original = df_seleccionado['cortante'].values
+
+    # Crear el gráfico para los valores originales (momento y cortante)
+    plt.figure(figsize=(10, 6))
+    plt.plot(x, momento_original, label='Momento Original', linestyle='-')
+    plt.plot(x, cortante_original, label='Cortante Original', linestyle='-')
+    plt.title('Valores Originales de Momento y Cortante')
+    plt.xlabel('Distancia (m)')
+    plt.ylabel('Valores')
+    plt.legend()
+    plt.grid(True)
+
+    # Guardar el gráfico en la carpeta 'static'
+    graph_path = os.path.join("static", 'momento_cortante_original.png')
+    plt.savefig(graph_path)
+    plt.close()
+
+    # Asegurarse de retornar siempre la ruta de la imagen
+    return graph_path
 
 # Calcular áreas mínimas de cortante y momento
 def calcular_areas_minimas(b, h, recub, fc, fy, fyt):
@@ -122,24 +190,22 @@ def calcular_areas_minimas(b, h, recub, fc, fy, fyt):
     
     return Av_min, As_min
 
-# Seleccionar barras de cortante y momento
-def seleccionar_numero_barra(Av_min, As_min):
+def seleccionar_numero_barra(Av_min, numero_barra_cortante, numero_barra_momento):
     """
-    Solicita al usuario el número de barra y calcula la cantidad de barras necesarias.
+    Verifica que el número de barra seleccionado para cortante cumpla con el área mínima requerida.
     """
-    numero_barra = int(input("Ingrese el número de barra para estribos de cortante: "))
-    area_cortante = barras[numero_barra] * 2 / 1000**2
+    # Calcular el área para el cortante
+    area_cortante = barras[numero_barra_cortante] * 2 / 1000**2
 
-    while area_cortante < Av_min:
-        numero_barra = int(input("El número de barra es insuficiente. Seleccione un número mayor: "))
-        area_cortante = barras[numero_barra] * 2 / 1000**2
+    # Verificar si el área de cortante cumple con el mínimo Av_min
+    if area_cortante < Av_min:
+        raise ValueError(f"El número de barra #{numero_barra_cortante} no cumple con el área mínima requerida para cortante.")
 
-    print(f"Barra seleccionada para cortante: #{numero_barra} con área {area_cortante * 1000**2:.2f} mm²")
-    
-    numero_barra_momento = int(input("Ingrese el número de barra para refuerzo a momento: "))
-   
-    
-    return numero_barra, numero_barra_momento
+    print(f"Barra seleccionada para cortante: #{numero_barra_cortante} con área {area_cortante * 1000**2:.2f} mm²")
+    print(f"Barra seleccionada para momento: #{numero_barra_momento}")
+
+    return numero_barra_cortante, numero_barra_momento
+
 
 # Calcular diseño a cortante
 def calcular_cortante(b, h, recub, fc, fyt, Vu, phi, tipo_concreto, numero):
@@ -254,53 +320,61 @@ def calcular_momento(b, h, recub, fc, fy, Mu, phi, Es, gamma):
     
     return As, Asprima
 
-# Ejecutar el proceso completo
-def ejecutar_proceso(csv_path):
-    """
-    Función que ejecuta el proceso completo desde la lectura del CSV hasta el cálculo de cortante y momento.
-    """
-    # Leer los parámetros del usuario
-    tipo_concreto, b, h, recub, fc, fyt, fy, phi_cortante, phi_momento, Es, gamma = input_parametros()
 
-    # Leer y seleccionar las columnas del CSV
-    df_seleccionado = seleccionar_columnas(csv_path)
-
-    # Procesar los datos reducidos
-    momento_reducido, cortante_reducido = procesar_datos(df_seleccionado)
+# Ejecutar el proceso completo para Flask
+def ejecutar_proceso(file_path, df_seleccionado, numero_barra_cortante, numero_barra_momento, 
+                     tipo_concreto, b, h, recub, fc, fyt, fy, phi_cortante, phi_momento, 
+                     Es, gamma, R, x_col):
+    
+    # Procesar los datos seleccionados
+    momento_reducido, cortante_reducido = procesar_datos(df_seleccionado, x_col, rango=R)
 
     # Análisis preliminar de la geometría de la sección
     Av_min, As_min = calcular_areas_minimas(b, h, recub, fc, fy, fyt)
 
-    # Seleccionar barras de cortante y momento
-    numero_barra, numero_barra_momento= seleccionar_numero_barra(Av_min, As_min)
+    # Obtener el área de las barras seleccionadas
+    area_barra_cortante = barras[numero_barra_cortante]
+    area_barra_momento = barras[numero_barra_momento]
+
+    print(f"Usando barra #{numero_barra_cortante} con área {area_barra_cortante} mm² para cortante y barra #{numero_barra_momento} con área {area_barra_momento} mm² para momento")
 
     print("\n--- Resultados por rango ---\n")
+    resultados = []
     for rango, Mu in momento_reducido.items():
         Vu = cortante_reducido[rango]
 
         print(f"Rango: {rango}")
         
-        # Calcular cortante
-        resultado_cortante = calcular_cortante(b, h, recub, fc, fyt, Vu, phi_cortante, tipo_concreto, numero_barra)
+        # Calcular cortante con el número de barra seleccionado
+        resultado_cortante = calcular_cortante(b, h, recub, fc, fyt, Vu, phi_cortante, tipo_concreto, numero_barra_cortante)
         print(resultado_cortante)
         
-
-        # Calcular momento
+        # Calcular momento con el número de barra seleccionado
         As, Asprima = calcular_momento(b, h, recub, fc, fy, Mu, phi_momento, Es, gamma)
-        print("Momento Ultimo: " + str(Mu) + " kN·m")
-        
+        print("Momento Último: " + str(Mu) + " kN·m")
 
-        area_momento = barras[numero_barra_momento]
-        Division=(As*1000**2)/area_momento
-        Division1=(Asprima*1000**2)/area_momento
-        num_barras_momento = int(np.ceil(Division))
-        num_barras_momento1 = int(np.ceil(Division1))
-        print(f"Acero a tracción = {num_barras_momento} #{numero_barra_momento} ")
-        print(f"Acero a compresión =  {num_barras_momento1} #{numero_barra_momento} ")
+        # Mostrar el número de barras de tracción y compresión con su área
+        num_barras_traccion = int(np.ceil((As * 1000**2) / area_barra_momento))
+        num_barras_compresion = int(np.ceil((Asprima * 1000**2) / area_barra_momento))
+
+        print(f"Acero a tracción = {num_barras_traccion} #{numero_barra_momento} con área {area_barra_momento} mm²")
+        print(f"Acero a compresión = {num_barras_compresion} #{numero_barra_momento} con área {area_barra_momento} mm²")
+
+        # Guardar los resultados en una lista para enviarlos a la plantilla HTML
+        resultados.append({
+            "rango": rango,
+            "Vu": Vu,
+            "resultado_cortante": resultado_cortante,
+            "Mu": Mu,
+            "num_barras_traccion": num_barras_traccion,
+            "numero_barra_momento": numero_barra_momento,  # Añadimos el área aquí
+            "num_barras_compresion": num_barras_compresion,
+            "numero_barra_momento": numero_barra_momento  # Añadimos el área aquí también
+        })
     
-        
-        print("\n")
+    # Guardar el gráfico de los valores originales y obtener la ruta
+    graph_path = graficar_resultados(df_seleccionado)
+    
+    return resultados, graph_path
 
-# Ejecutar el proceso completo con el archivo CSV
-csv_path = r"C:\Users\Danie\OneDrive\Documentos\DANIEL\9NO\PROGRAMACION\Proyecto-Final-Los-Inges-\csv datos.csv"
-ejecutar_proceso(csv_path)
+

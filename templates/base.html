@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Proyecto Final{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{{ url_for('index') }}" class="btn">Inicio</a> <!-- Nuevo botón para ir al inicio -->
+            <a href="{{ url_for('vigas') }}" class="btn">Diseño de Vigas</a>
+            <a href="{{ url_for('columnas') }}" class="btn">Diseño de Columnas</a>
+        </nav>
+        
+        <div class="titulo">
+            <h1>PROYECTO FINAL</h1>
+        </div>
+    </header>
+    <div class="nombre">
+        <h2>Los Inges</h2>
+    </div>
+
+    <main>
+        {% block content %}
+        <!-- El contenido específico de cada página va aquí -->
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

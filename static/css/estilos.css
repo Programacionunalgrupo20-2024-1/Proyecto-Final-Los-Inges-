@@ -1,0 +1,87 @@
+ body {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, #abbaab, #ffffff);
+    background-attachment: fixed;
+    background-size: cover;
+    position: relative;
+}
+
+*{
+    box-sizing: border-box;
+}
+
+header {
+    color: white;
+    background: #870000;
+    background: -webkit-linear-gradient(to right, hsl(15, 67%, 6%), #870000); 
+    background: linear-gradient(to right, #190A05, #870000);
+
+}
+
+.titulo{
+    padding: 0 0 10px 0;
+    text-align: center;
+    align-content: center;
+}
+
+.nombre{
+    padding: 0 0 10px 0;
+    text-align: left;
+    color: #000000;
+
+}
+
+nav{
+    text-align: right;
+    padding: 30px 50px 0 0;
+}
+
+nav > a{
+    color: #ffffff;
+    font-weight: 300;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+nav > a:hover{
+    color: #000000;
+    font-weight: 300;
+    text-decoration: underline;
+
+}
+
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+section {
+    margin-bottom:   
+ 20px;
+}
+
+h2 {
+    color: #506c9e;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+footer {
+    color: white;
+    text-align: center;
+    padding: 10px;
+    background: #870000;
+    background: -webkit-linear-gradient(to right, #190A05, #870000); 
+    background: linear-gradient(to right, #190A05, #870000); 
+
+}

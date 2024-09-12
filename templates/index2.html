@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>proyecto final los inges</title>
+    <!-- Ruta al archivo CSS dentro de la carpeta 'static' -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+    <link rel="shortcut icon" href="imagenes/logo.jfif" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{{ url_for('index') }}" class="btn">Inicio</a> <!-- Nuevo botón para ir al inicio -->
+            <a href="{{ url_for('vigas') }}" class="btn">Diseño de Vigas</a>
+            <a href="{{ url_for('columnas') }}" class="btn">Diseño de Columnas</a>
+        </nav>
+        
+        <div class="titulo">
+            <h1>PROYECTO FINAL</h1>
+        </div>
+    </header>
+    <div class="nombre">
+        <h2>Los Inges</h2>
+    </div>
+    <main>
+        <section id="descripcion">
+            <h2>Descripción del Proyecto</h2>
+            <p>El problema a resolver con estas metodologías es automatizar y optimizar el proceso de diseño de refuerzos de vigas y columnas de concreto en función de los resultados obtenidos de un software de análisis estructural (como por ejemplo SAP2000)</p>
+            <p>El objetivo es lograr un diseño eficiente, seguro y en conformidad con las normas, que además sea práctico y fácil de implementar en la construcción, reduciendo así errores y optimizando el uso de materiales.
+</p>
+        </section>
+        <section id="integrantes">
+            <h2>Integrantes del Proyecto</h2>
+            <ul>
+                <li><strong>Cristian Felipe Gutiérrez Espitia</strong> - Ing. agrícola</li>
+                <li><strong>Daniel García Castro</strong> - Ing. civil</li>
+                <li><strong></strong>Miguelangel Parra Cifuentes</strong> - Ing. agrícola</li>
+               
+            </ul>
+        </section>
+
+        <section id="Objetivos especificos">
+            <h2>Requisitos para la Entrega</h2>
+            <ul>
+                <li>Desarrollar un módulo que permita la importación de archivos provenientes de un software de análisis estructural (csv), que contengan los diagramas de momento y cortante de la viga analizada.</li>
+                <li>Calcular la cuantía necesaria de refuerzo longitudinal en la viga, identificar las zonas adecuadas para la colocación de traslapos en las varillas de refuerzo, respetando las restricciones impuestas por la NSR-10.</li>
+                <li>Presentar los resultados finales del diseño de refuerzo en términos claros y organizados, incluyendo detalles sobre la distribución de las varillas, la cantidad y los diámetros de las varillas.
+</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

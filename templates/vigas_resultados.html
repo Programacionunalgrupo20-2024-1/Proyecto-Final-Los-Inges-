@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Resultados del Diseño de Vigas
+{% endblock %}
+
+{% block content %}
+    <h1>Resultados del Diseño de Vigas</h1>
+
+    {% for resultado in resultados %}
+    <h4>Rango: {{ resultado.rango }} m</h4>
+    <p>Solicitación a Cortante (Vu): {{ resultado.Vu }} kN</p>
+    <p>Resultado de Cortante: {{ resultado.resultado_cortante }}</p>
+    <p>Momento Último (Mu): {{ resultado.Mu }} kN·m</p>
+    <p>Acero a tracción: {{ resultado.num_barras_traccion }} barras número {{ resultado.numero_barra_momento }}</p>
+    <p>Acero a compresión: {{ resultado.num_barras_compresion }} barras número {{ resultado.numero_barra_momento }}</p>
+    <hr>
+    {% endfor %}
+
+    <h3>Gráfico de Momento y Cortante</h3>
+    <img src="{{ url_for('static', filename='momento_cortante_original.png') }}" alt="Gráfico de Momento y Cortante">
+{% endblock %}

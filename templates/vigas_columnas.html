@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Seleccionar Columnas y Barras
+{% endblock %}
+
+{% block content %}
+    <h1>Seleccionar Columnas del CSV y Barras</h1>
+
+    <!-- Muestra las áreas mínimas calculadas -->
+    <p><strong>Área mínima para cortante (Av_min):</strong> {{ form_data.Av_min }} mm²</p>
+    <p><strong>Área mínima para momento (As_min):</strong> {{ form_data.As_min }} mm²</p>
+
+    <form method="POST" action="{{ url_for('procesar_columnas') }}">
+        <!-- Enviar el path del archivo -->
+        <input type="hidden" name="file_path" value="{{ file_path }}">
+
+        <!-- Enviar los datos del formulario original como campos ocultos -->
+        <input type="hidden" name="tipo_concreto" value="{{ form_data.tipo_concreto }}">
+        <input type="hidden" name="b" value="{{ form_data.b }}">
+        <input type="hidden" name="h" value="{{ form_data.h }}">
+        <input type="hidden" name="recub" value="{{ form_data.recub }}">
+        <input type="hidden" name="fc" value="{{ form_data.fc }}">
+        <input type="hidden" name="fyt" value="{{ form_data.fyt }}">
+        <input type="hidden" name="R" value="{{ form_data.R }}">
+
+        <!-- Seleccionar las columnas del CSV -->
+        <label for="x_col">Columna de coordenadas X:</label>
+        <select name="x_col" required>
+            {% for col in columnas %}
+            <option value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="momento_col">Columna de Momento:</label>
+        <select name="momento_col" required>
+            {% for col in columnas %}
+            <option value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="cortante_col">Columna de Cortante:</label>
+        <select name="cortante_col" required>
+            {% for col in columnas %}
+            <option value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <!-- Seleccionar el número de barra -->
+        <label for="numero_barra_cortante">Número de barra para cortante (debe ser >= {{ form_data.Av_min }} mm²):</label>
+        <input type="number" name="numero_barra_cortante" required><br><br>
+
+        <label for="numero_barra_momento">Número de barra para momento (debe ser >= {{ form_data.As_min }} mm²):</label>
+        <input type="number" name="numero_barra_momento" required><br><br>
+
+        <button type="submit">Procesar</button>
+    </form>
+{% endblock %}

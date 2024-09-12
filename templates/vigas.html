@@ -1,23 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Diseño de Vigas</title>
-</head>
-<body>
-    <h1>Diseño de Vigas</h1>
-    <form action="/vigas" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" required>
-        <button type="submit">Subir Archivo y Procesar</button>
-    </form>
+{% extends "base.html" %}
 
-    {% if column_names %}
-        <h2>Nombres de Columnas:</h2>
-        <ul>
-            {% for name in column_names %}
-                <li>{{ name }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-</body>
-</html>
+{% block title %}
+    Diseño de Vigas
+{% endblock %}
+
+{% block content %}
+    <h1>Diseño de Vigas</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <!-- Campo para subir el archivo CSV -->
+        <label for="file">Archivo CSV:</label>
+        <input type="file" name="file" required><br><br>
+
+        <!-- Campo para seleccionar si el concreto es liviano -->
+        <label for="tipo_concreto">¿Concreto liviano? (si/no):</label>
+        <input type="text" name="tipo_concreto" required><br><br>
+
+        <!-- Parámetros de la viga -->
+        <label for="b">Base (m):</label>
+        <input type="number" name="b" step="0.01" required><br><br>
+
+        <label for="h">Altura (m):</label>
+        <input type="number" name="h" step="0.01" required><br><br>
+
+        <label for="recub">Recubrimiento (m):</label>
+        <input type="number" name="recub" step="0.01" required><br><br>
+
+        <!-- Resistencia de los materiales -->
+        <label for="fc">Resistencia del concreto (MPa):</label>
+        <input type="number" name="fc" step="0.01" required><br><br>
+
+        <label for="fyt">Resistencia del acero (MPa):</label>
+        <input type="number" name="fyt" step="0.01" required><br><br>
+
+        <!-- Distancia de análisis de la viga -->
+        <label for="R">Cada cuántos metros analizar (m):</label>
+        <input type="number" name="R" step="0.01" required><br><br>
+
+        <!-- Botón para enviar el formulario -->
+        <button type="submit">Subir Archivo</button>
+    </form>
+{% endblock %}
